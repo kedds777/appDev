@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////
 
 const http = require('http'); 
-const CONSTANTS = require('./utils/constants.js');
+const CONSTANTS = require('./public/constants');
 const fs = require('fs');
 const path = require('path');
 const WebSocket = require('ws');
