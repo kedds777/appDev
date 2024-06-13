@@ -84,8 +84,10 @@ function broadcast(data, socketToOmit) {
   })
 }
 
+const port = process.env.port || 8080;
+
 // Start the server listening on localhost:8080
-server.listen(PORT, () => {
-  console.log(`Listening on: http://localhost:${server.address().port}`);
+server.listen(port, () => {
+  console.log(`Listening on: ${port}`);
 });
 
