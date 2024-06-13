@@ -4,10 +4,8 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./styles.css">
-  <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" type="text/css" href="./styles.css">
   <!-- You may choose to use the message constants defined in the file below -->
-  <script src="./constants.js"></script>
   <title>ChatCademy</title>
 </head>
 <body>
@@ -71,27 +69,20 @@
       // TODO: 
       // Exercise 4: Create a new WebSocket connection with the server using the ws protocol.
       //const URL = 'ws://localhost:' + PORT;
-      const URL = 'wss://app-dev-three.vercel.app';
+      const URL = 'ws://localhost:3000';
       wsClient = new WebSocket(URL);
 
 
       // TODO:
       // Exercise 5: Respond to connections by defining the .onopen event handler.
-      try{
         wsClient.onopen = () => {
         let data = {
-          type: CLIENT.MESSAGE.NEW_USER,
+          type: 'NEW_USER',
           payload: { username }
         }
 
         wsClient.send(JSON.stringify(data));
-      }  
       }
-      catch(e){
-        console.log(`Error with connection: ${e}`)
-      }
-      
-
 
       // TODO:
       // Exercise 7: Respond to messages from the servery by defining the .onmessage event handler
@@ -101,10 +92,10 @@
         const { type, payload } = JSON.parse(message);
 
         switch(type) {
-          case SERVER.BROADCAST.NEW_USER_WITH_TIME:
+          case 'NEW_USER_WITH_TIME':
             showMessageReceived('<em>' + payload.username + ' has joined at ' + payload.time + ' !</em>');
             break;
-          case CLIENT.MESSAGE.NEW_MESSAGE:
+          case 'NEW_MESSAGE':
             showMessageReceived(`<strong>[${payload.username}]</strong> ${payload.message}`);
             break;
           default:
@@ -141,7 +132,7 @@
       // Exercise 6: Send the message from the messageBox to the server
       // Exercise 9: Send the message in a custom message object with .type and .payload properties
       let data = {
-        type: CLIENT.MESSAGE.NEW_MESSAGE,
+        type: 'NEW_MESSAGE',
         payload: { message, username }
       }
 
