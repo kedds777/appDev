@@ -2,37 +2,27 @@
 ///////////// IMPORTS + VARIABLES /////////////
 ///////////////////////////////////////////////
 
-const http = require('http'); 
-const CONSTANTS = require('./public/constants');
-const fs = require('fs');
-const path = require('path');
-const WebSocket = require('ws');
-
-// You may choose to use the constants defined in the file below
-const { PORT, CLIENT, SERVER } = CONSTANTS;
+import express from 'express';
+import { createServer } from 'node:http';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import WebSocket from 'ws';
 
 ///////////////////////////////////////////////
 ///////////// HTTP SERVER LOGIC ///////////////
 ///////////////////////////////////////////////
 
-// Create the HTTP server
-const server = http.createServer((req, res) => {
-  // get the file path from req.url, or '/public/index.html' if req.url is '/'
-  const filePath = ( req.url === '/' ) ? '/public/index.html' : `/public/${req.url}`;
+const app = express();
+const server = createServer(app);
 
-  // determine the contentType by the file extension
-  const extname = path.extname(filePath);
-  console.log(`Req Url: ${req.url}`);
-  console.log(`Extname: ${extname}`);
-  console.log(`File Path: ${filePath}`);
-  console.log(`Dir Name ${__dirname}`);
-  let contentType = 'text/html';
-  if (extname === '.js') contentType = 'text/javascript';
-  else if (extname === '.css') contentType = 'text/css';
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-  // pipe the proper file to the res object
-  res.writeHead(200, { 'Content-Type': contentType });
-  fs.createReadStream(`${__dirname}/${filePath}`, 'utf8').pipe(res);
+app.use(express.static(__dirname + '/public'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.get('/', (req, res) => {
+  res.sendFile(join(__dirname, 'index.html'));
 });
 
 ///////////////////////////////////////////////
@@ -55,16 +45,16 @@ wsServer.on('connection', (socket) => {
     const { type, payload } = JSON.parse(data);
 
     switch(type) {
-      case CLIENT.MESSAGE.NEW_USER:
+      case 'NEW_USER':
         const time = new Date().toLocaleString();
         payload.time = time;
         const dataWithTime = {
-          type: SERVER.BROADCAST.NEW_USER_WITH_TIME,
+          type: 'NEW_USER_WITH_TIME',
           payload
         }
         broadcast(JSON.stringify(dataWithTime));
         break;
-      case CLIENT.MESSAGE.NEW_MESSAGE:
+      case 'NEW_MESSAGE':
         broadcast(data, socket);
         break;
       default:
@@ -88,10 +78,8 @@ function broadcast(data, socketToOmit) {
   })
 }
 
-const port = process.env.port || 8080;
-
 // Start the server listening on localhost:8080
-server.listen(port, () => {
-  console.log(`Listening on: ${port}`);
+server.listen(3000, () => {
+  console.log('server running at http://localhost:3000');
 });
 
