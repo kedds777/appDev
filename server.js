@@ -18,10 +18,14 @@ const { PORT, CLIENT, SERVER } = CONSTANTS;
 // Create the HTTP server
 const server = http.createServer((req, res) => {
   // get the file path from req.url, or '/public/index.html' if req.url is '/'
-  const filePath = ( req.url === '/' ) ? '/public/index.html' : req.url;
+  const filePath = ( req.url === '/' ) ? '/public/index.html' : `/public/${req.url}`;
 
   // determine the contentType by the file extension
   const extname = path.extname(filePath);
+  console.log(`Req Url: ${req.url}`);
+  console.log(`Extname: ${extname}`);
+  console.log(`File Path: ${filePath}`);
+  console.log(`Dir Name ${__dirname}`);
   let contentType = 'text/html';
   if (extname === '.js') contentType = 'text/javascript';
   else if (extname === '.css') contentType = 'text/css';
